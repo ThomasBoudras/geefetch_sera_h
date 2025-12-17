@@ -285,8 +285,10 @@ class S1(SatelliteABC):
             return s1_im
 
         match orbit:
-            case S1Orbit.ASCENDING | S1Orbit.DESCENDING | S1Orbit.BOTH:
+            case S1Orbit.ASCENDING | S1Orbit.DESCENDING:
                 s1_im = get_im(orbit)
+                s1_im = PatchedBaseImage(s1_im)
+                return DownloadableGeedimImage(s1_im)
             case S1Orbit.AS_BANDS:
                 s1_im_asc = get_im(S1Orbit.ASCENDING).select(selected_bands)
                 s1_im_asc = s1_im_asc.rename([f"{band}_ascending" for band in selected_bands])  # type: ignore[union-attr]
@@ -296,8 +298,19 @@ class S1(SatelliteABC):
 
                 s1_im = s1_im_asc.addBands(s1_im_desc)
 
-        s1_im = PatchedBaseImage(s1_im)
-        return DownloadableGeedimImage(s1_im)
+                s1_im = PatchedBaseImage(s1_im)
+                return DownloadableGeedimImage(s1_im)
+
+            case S1Orbit.BOTH:
+                s1_im_asc = get_im(S1Orbit.ASCENDING)
+                s1_im_desc = get_im(S1Orbit.DESCENDING)
+
+                s1_im_asc = PatchedBaseImage(s1_im_asc)
+                s1_im_desc = PatchedBaseImage(s1_im_desc)
+                return DownloadableGeedimImageCollection({
+                    f"s1_asc": s1_im_asc,
+                    f"s1_dsc": s1_im_desc
+                })
 
     def before_composite(
         self,

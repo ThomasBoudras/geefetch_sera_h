@@ -114,7 +114,7 @@ class SatelliteABC(ABC):
         match pixel_range:
             case tuple():
                 min_p, max_p = pixel_range
-                im = im.clamp(min_p, max_p)
+                im = Image(im.clamp(min_p, max_p).copyProperties(im, im.propertyNames()))
                 match dtype:
                     case DType.Float32:
                         return im
