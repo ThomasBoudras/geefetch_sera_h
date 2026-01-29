@@ -325,7 +325,7 @@ class S1(SatelliteABC):
 
     def after_composite(self, im: Image, dtype: DType) -> Image:
         # Convert from power to db
-        im = im.log10().multiply(10)
+        im = Image(im.log10().multiply(10).copyProperties(im, im.propertyNames()))
         # Apply pixel range and dtype
         im = self.convert_dtype(im, dtype)
         return im
