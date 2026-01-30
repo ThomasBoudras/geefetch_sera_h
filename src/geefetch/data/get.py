@@ -118,7 +118,7 @@ def download_chip(
 ) -> Path:
     """Download a specific chip of data from the satellite."""
     bands = selected_bands if selected_bands is not None else satellite.default_selected_bands
-    if out.exists():
+    if not as_time_series and out.exists():
         log.debug(f"Found feature chip [cyan]{out}[/]")
         if not geofile_is_clean(out):
             log.info(f"File [cyan]{out}[/] is corrupted. Removing it.")
